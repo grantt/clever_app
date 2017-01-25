@@ -1,0 +1,1 @@
+web: gunicorn clever_app:app
