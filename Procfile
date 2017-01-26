@@ -1,1 +1,1 @@
-web: gunicorn --log-file=- clever_app:app
+web: gunicorn clever_app:app

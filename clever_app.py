@@ -2,7 +2,7 @@ import os
 import json
 import base64
 import requests
-import logging
+
 from urllib import urlencode
 
 from flask import Flask, session, render_template, request, redirect
@@ -23,7 +23,7 @@ else:
 @app.route('/')
 def index():
     # If the user is in the session we consider them authenticated
-    if 'user' in session:
+    if session.get('user'):
         redirect('/home')
 
     encoded = urlencode({
@@ -61,7 +61,6 @@ def redirect():
         return "An error occurred with your login. Please try again."
     else:
         response_obj = response.json()
-        logging.info(response_obj)
     token = response_obj['access_token']
 
     bearer_headers = {
@@ -74,15 +73,14 @@ def redirect():
 
     else:
         api_response_obj = api_response.json()
-        logging.info(api_response_obj)
-        session['user'] = api_response_obj['data']['name']
+        session['user'] = api_response_obj['data'].get('id', None)
 
         redirect('/home')
 
 @app.route('/home')
 def home():
     # If the user is in the session we display the app
-    if 'user' in session:
+    if session.get('user'):
         render_template(
             'home.html',
             name=session['user']
