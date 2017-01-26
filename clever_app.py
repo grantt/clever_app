@@ -20,6 +20,7 @@ if os.environ.get('PRODUCTION') == "TRUE":
 else:
     REDIRECT_URI = 'http://localhost:8000/redirect'
 
+
 @app.route('/')
 def index():
     # If the user is in the session we consider them authenticated
@@ -40,6 +41,7 @@ def index():
         'index.html',
         redirect_url=redirect_url
     )
+
 
 @app.route('/redirect')
 def oauth_redirect():
