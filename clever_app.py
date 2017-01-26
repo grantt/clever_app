@@ -2,6 +2,7 @@ import os
 import json
 import base64
 import requests
+import logging
 from urllib import urlencode
 
 from flask import Flask, session, render_template, request, redirect
@@ -21,8 +22,10 @@ else:
 
 @app.route('/')
 def index():
+    # If the user is in the session we consider them authenticated
     if 'user' in session:
         redirect('/home')
+
     encoded = urlencode({
         'response_type': 'code',
         'redirect_uri': REDIRECT_URI,
@@ -53,28 +56,39 @@ def redirect():
         'Content-Type': 'application/json',
     }
 
-    response = requests.post('https://clever.com/oauth/tokens', data=json.dumps(payload), headers=headers).json()
-
-    if response['code'] != 200:
+    response = requests.post('https://clever.com/oauth/tokens', data=json.dumps(payload), headers=headers)
+    if response.status_code != 200:
         return "An error occurred with your login. Please try again."
-
-    token = response['access_token']
+    else:
+        response_obj = response.json()
+        logging.info(response_obj)
+    token = response_obj['access_token']
 
     bearer_headers = {
         'Authorization': 'Bearer {token}'.format(token=token)
     }
 
-    api_response = requests.get(CLEVER_API_BASE + '/me', headers=bearer_headers).json()
+    api_response = requests.get(CLEVER_API_BASE + '/me', headers=bearer_headers)
     if api_response['code'] != 200:
-        return "An error occurred with your login. Please try again."
+        return "An error occurred trying to retrieve your information. Please try again."
 
-    session['user'] = api_response['data']
+    else:
+        api_response_obj = api_response.json()
+        logging.info(api_response_obj)
+        session['user'] = api_response_obj['data']['name']
 
-    redirect('/home')
+        redirect('/home')
 
 @app.route('/home')
 def home():
-    return "App home"
+    # If the user is in the session we display the app
+    if 'user' in session:
+        render_template(
+            'home.html',
+            name=session['user']
+        )
+    else:
+        redirect('/')
 
 if __name__ == '__main__':
     app.run()
