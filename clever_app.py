@@ -35,11 +35,11 @@ def index():
         'scope': 'read:user_id read:sis'
     })
 
-    redirect_url = 'https://clever.com/oauth/authorize?{}'.format(encoded)
+    url = 'https://clever.com/oauth/authorize?{}'.format(encoded)
 
     return render_template(
         'index.html',
-        redirect_url=redirect_url
+        url=url
     )
 
 
