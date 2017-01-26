@@ -42,7 +42,7 @@ def index():
     )
 
 @app.route('/redirect')
-def redirect():
+def oauth_redirect():
     code = request.args.get('code')
 
     payload = {
