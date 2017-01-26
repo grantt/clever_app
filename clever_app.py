@@ -74,6 +74,7 @@ def oauth_redirect():
     else:
         api_response_obj = api_response.json()
         session['user'] = api_response_obj['data'].get('id', None)
+        session['data'] = json.dumps(api_response_obj['data'])
 
         return redirect(url_for('home'))
 
@@ -84,7 +85,8 @@ def home():
     if session.get('user'):
         return render_template(
             'home.html',
-            name=session['user']
+            name=session['user'],
+            data=session['data']
         )
     else:
         return redirect(url_for('index'))
