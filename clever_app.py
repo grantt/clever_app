@@ -83,10 +83,10 @@ def oauth_redirect():
 def home():
     # If the user is in the session we display the app
     if session.get('user'):
+        data = json.loads(session.get('data'))
         return render_template(
             'home.html',
-            name=session['user'],
-            data=session['data']
+            data=data
         )
     else:
         return redirect(url_for('index'))
