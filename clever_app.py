@@ -75,19 +75,19 @@ def oauth_redirect():
         api_response_obj = api_response.json()
         session['user'] = api_response_obj['data'].get('id', None)
 
-        redirect(url_for('home'))
+        return redirect(url_for('home'))
 
 
 @app.route('/home')
 def home():
     # If the user is in the session we display the app
     if session.get('user'):
-        render_template(
+        return render_template(
             'home.html',
             name=session['user']
         )
     else:
-        redirect(url_for('index'))
+        return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run()
