@@ -69,7 +69,7 @@ def redirect():
     }
 
     api_response = requests.get(CLEVER_API_BASE + '/me', headers=bearer_headers)
-    if api_response['code'] != 200:
+    if api_response.status_code != 200:
         return "An error occurred trying to retrieve your information. Please try again."
 
     else:
