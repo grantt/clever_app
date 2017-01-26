@@ -5,7 +5,7 @@ import requests
 
 from urllib import urlencode
 
-from flask import Flask, session, render_template, request, redirect
+from flask import Flask, session, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -24,7 +24,7 @@ else:
 def index():
     # If the user is in the session we consider them authenticated
     if session.get('user'):
-        redirect('/home')
+        redirect(url_for('home'))
 
     encoded = urlencode({
         'response_type': 'code',
@@ -75,7 +75,8 @@ def redirect():
         api_response_obj = api_response.json()
         session['user'] = api_response_obj['data'].get('id', None)
 
-        redirect('/home')
+        redirect(url_for('home'))
+
 
 @app.route('/home')
 def home():
@@ -86,7 +87,7 @@ def home():
             name=session['user']
         )
     else:
-        redirect('/')
+        redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run()
